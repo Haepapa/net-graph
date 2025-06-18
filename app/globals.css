@@ -29,6 +29,28 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
   }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
 }
 
 @layer base {
@@ -45,16 +67,32 @@
   @apply bg-slate-100 border-slate-300 text-slate-700;
 }
 
+.dark .node-default {
+  @apply bg-slate-800 border-slate-600 text-slate-200;
+}
+
 .node-primary {
   @apply bg-blue-50 border-blue-300 text-blue-800;
+}
+
+.dark .node-primary {
+  @apply bg-blue-900/50 border-blue-600 text-blue-200;
 }
 
 .node-secondary {
   @apply bg-slate-50 border-slate-300 text-slate-700;
 }
 
+.dark .node-secondary {
+  @apply bg-slate-800 border-slate-600 text-slate-200;
+}
+
 .node-success {
   @apply bg-emerald-50 border-emerald-300 text-emerald-800;
+}
+
+.dark .node-success {
+  @apply bg-emerald-900/50 border-emerald-600 text-emerald-200;
 }
 
 .node-warning {
@@ -64,12 +102,27 @@
   color: #92400e;
 }
 
+.dark .node-warning {
+  @apply bg-amber-900/50 border-amber-600 text-amber-200;
+  fill: #451a03;
+  stroke: #f59e0b;
+  color: #fbbf24;
+}
+
 .node-danger {
   @apply bg-rose-50 border-rose-300 text-rose-800;
 }
 
+.dark .node-danger {
+  @apply bg-rose-900/50 border-rose-600 text-rose-200;
+}
+
 .node-info {
   @apply bg-cyan-50 border-cyan-300 text-cyan-800;
+}
+
+.dark .node-info {
+  @apply bg-cyan-900/50 border-cyan-600 text-cyan-200;
 }
 
 /* Beautiful Link Styles with CSS Classes */
@@ -79,9 +132,19 @@
   opacity: 0.8;
 }
 
+.dark .link-default .link-path {
+  stroke: #64748b;
+  opacity: 0.9;
+}
+
 .link-primary .link-path {
   stroke: #3b82f6;
   stroke-dasharray: none;
+  opacity: 0.9;
+}
+
+.dark .link-primary .link-path {
+  stroke: #60a5fa;
   opacity: 0.9;
 }
 
@@ -91,9 +154,19 @@
   opacity: 0.8;
 }
 
+.dark .link-secondary .link-path {
+  stroke: #94a3b8;
+  opacity: 0.8;
+}
+
 .link-success .link-path {
   stroke: #10b981;
   stroke-dasharray: none;
+  opacity: 0.9;
+}
+
+.dark .link-success .link-path {
+  stroke: #34d399;
   opacity: 0.9;
 }
 
@@ -103,15 +176,30 @@
   opacity: 0.9;
 }
 
+.dark .link-warning .link-path {
+  stroke: #fbbf24;
+  opacity: 0.9;
+}
+
 .link-danger .link-path {
   stroke: #ef4444;
   stroke-dasharray: none;
   opacity: 0.9;
 }
 
+.dark .link-danger .link-path {
+  stroke: #f87171;
+  opacity: 0.9;
+}
+
 .link-info .link-path {
   stroke: #06b6d4;
   stroke-dasharray: 3, 3;
+  opacity: 0.9;
+}
+
+.dark .link-info .link-path {
+  stroke: #22d3ee;
   opacity: 0.9;
 }
 
@@ -123,11 +211,22 @@
   stroke-width: 1;
 }
 
+.dark .link-label-bg {
+  fill: #1e293b;
+  fill-opacity: 0.95;
+  stroke: #475569;
+  stroke-width: 1;
+}
+
 .link-label-text {
   fill: #475569;
   font-size: 11px;
   font-weight: 600;
   font-family: system-ui, -apple-system, sans-serif;
+}
+
+.dark .link-label-text {
+  fill: #cbd5e1;
 }
 
 /* Link Hover Effects */
@@ -142,8 +241,18 @@
   stroke-width: 1.5;
 }
 
+.dark .link:hover .link-label-bg {
+  fill: #0f172a;
+  stroke: #64748b;
+  stroke-width: 1.5;
+}
+
 .link:hover .link-label-text {
   fill: #1e293b;
+}
+
+.dark .link:hover .link-label-text {
+  fill: #f1f5f9;
 }
 
 /* Smooth transitions for all interactive elements */
@@ -170,13 +279,25 @@
   border-radius: 3px;
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 3px;
 }
 
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 
 /* Prevent text selection during panning */
@@ -185,6 +306,11 @@
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+}
+
+/* Grid pattern for dark mode */
+.dark .grid-pattern {
+  stroke: #374151;
 }
 
 .sas-script {

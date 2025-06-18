@@ -74,15 +74,48 @@ export function calculateAutoFit(nodes: NodeData[], containerWidth: number, cont
   return { zoom, pan }
 }
 
-// Reorganize nodes in a grid
-export function reorganizeNodes(nodes: NodeData[], columns = 3): NodeData[] {
+// Reorganize nodes with aspect ratio awareness
+export function reorganizeNodes(nodes: NodeData[], containerWidth: number, containerHeight: number): NodeData[] {
+  if (nodes.length === 0) return nodes
+
+  // Calculate optimal grid dimensions based on container aspect ratio
+  const aspectRatio = containerWidth / containerHeight
+  const nodeCount = nodes.length
+
+  let columns: number
+  let rows: number
+
+  if (aspectRatio > 1.5) {
+    // Wide landscape - prefer more columns
+    columns = Math.ceil(Math.sqrt(nodeCount * aspectRatio))
+    rows = Math.ceil(nodeCount / columns)
+  } else if (aspectRatio < 0.75) {
+    // Tall portrait - prefer more rows
+    rows = Math.ceil(Math.sqrt(nodeCount / aspectRatio))
+    columns = Math.ceil(nodeCount / rows)
+  } else {
+    // Square-ish - balanced grid
+    columns = Math.ceil(Math.sqrt(nodeCount))
+    rows = Math.ceil(nodeCount / columns)
+  }
+
+  // Calculate spacing based on container size
+  const horizontalSpacing = Math.max(200, containerWidth / (columns + 1))
+  const verticalSpacing = Math.max(150, containerHeight / (rows + 1))
+
+  // Calculate starting position to center the grid
+  const totalWidth = (columns - 1) * horizontalSpacing
+  const totalHeight = (rows - 1) * verticalSpacing
+  const startX = (containerWidth - totalWidth) / 2
+  const startY = (containerHeight - totalHeight) / 2
+
   return nodes.map((node, index) => {
     const row = Math.floor(index / columns)
     const col = index % columns
     return {
       ...node,
-      x: col * 250 + 200,
-      y: row * 200 + 200,
+      x: startX + col * horizontalSpacing,
+      y: startY + row * verticalSpacing,
     }
   })
 }

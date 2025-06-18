@@ -1,47 +1,59 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useMemo } from "react"
 import { toPng } from "html-to-image"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Maximize, Download, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react"
+import { Maximize, Download, ChevronLeft, ChevronRight, RotateCcw, Sun, Moon } from "lucide-react"
 
 import { useGraphData } from "@/hooks/use-graph-data"
+import { useTheme } from "@/hooks/use-theme"
 import { getNodeConnectionPoint, calculateAutoFit, reorganizeNodes } from "@/lib/graph-utils"
 import type { NodeData, LinkData } from "@/lib/types"
 
-// Node Components
+// Node Components with optimized drag handling
 const CircleNode = ({
   node,
-  onDrag,
+  onDragStart,
+  onDragMove,
+  onDragEnd,
   isDragging,
-}: { node: NodeData; onDrag: (id: string, x: number, y: number) => void; isDragging: boolean }) => {
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    const startX = e.clientX - node.x
-    const startY = e.clientY - node.y
+}: {
+  node: NodeData
+  onDragStart: (id: string, startX: number, startY: number) => void
+  onDragMove: (clientX: number, clientY: number) => void
+  onDragEnd: () => void
+  isDragging: boolean
+}) => {
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      onDragStart(node.id, e.clientX, e.clientY)
 
-    const handleMouseMove = (e: MouseEvent) => {
-      onDrag(node.id, e.clientX - startX, e.clientY - startY)
-    }
+      const handleMouseMove = (e: MouseEvent) => {
+        onDragMove(e.clientX, e.clientY)
+      }
 
-    const handleMouseUp = () => {
-      document.removeEventListener("mousemove", handleMouseMove)
-      document.removeEventListener("mouseup", handleMouseUp)
-    }
+      const handleMouseUp = () => {
+        document.removeEventListener("mousemove", handleMouseMove)
+        document.removeEventListener("mouseup", handleMouseUp)
+        onDragEnd()
+      }
 
-    document.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseup", handleMouseUp)
-  }
+      document.addEventListener("mousemove", handleMouseMove)
+      document.addEventListener("mouseup", handleMouseUp)
+    },
+    [node.id, onDragStart, onDragMove, onDragEnd],
+  )
 
   return (
     <div
       className={`absolute rounded-full border-2 flex items-center justify-center text-sm font-semibold cursor-move select-none transition-all duration-200 hover:scale-105 hover:shadow-lg ${
         node.className || "node-default"
-      } ${isDragging ? "opacity-75 scale-105 shadow-xl" : "shadow-md"}`}
+      } ${isDragging ? "opacity-75 scale-105 shadow-xl z-50" : "shadow-md"}`}
       style={{
         left: node.x - (node.sizeX || 80) / 2,
         top: node.y - (node.sizeY || 80) / 2,
@@ -58,33 +70,44 @@ const CircleNode = ({
 
 const RectangleNode = ({
   node,
-  onDrag,
+  onDragStart,
+  onDragMove,
+  onDragEnd,
   isDragging,
-}: { node: NodeData; onDrag: (id: string, x: number, y: number) => void; isDragging: boolean }) => {
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    const startX = e.clientX - node.x
-    const startY = e.clientY - node.y
+}: {
+  node: NodeData
+  onDragStart: (id: string, startX: number, startY: number) => void
+  onDragMove: (clientX: number, clientY: number) => void
+  onDragEnd: () => void
+  isDragging: boolean
+}) => {
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      onDragStart(node.id, e.clientX, e.clientY)
 
-    const handleMouseMove = (e: MouseEvent) => {
-      onDrag(node.id, e.clientX - startX, e.clientY - startY)
-    }
+      const handleMouseMove = (e: MouseEvent) => {
+        onDragMove(e.clientX, e.clientY)
+      }
 
-    const handleMouseUp = () => {
-      document.removeEventListener("mousemove", handleMouseMove)
-      document.removeEventListener("mouseup", handleMouseUp)
-    }
+      const handleMouseUp = () => {
+        document.removeEventListener("mousemove", handleMouseMove)
+        document.removeEventListener("mouseup", handleMouseUp)
+        onDragEnd()
+      }
 
-    document.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseup", handleMouseUp)
-  }
+      document.addEventListener("mousemove", handleMouseMove)
+      document.addEventListener("mouseup", handleMouseUp)
+    },
+    [node.id, onDragStart, onDragMove, onDragEnd],
+  )
 
   return (
     <div
       className={`absolute rounded-xl border-2 flex items-center justify-center text-sm font-semibold cursor-move select-none transition-all duration-200 hover:scale-105 hover:shadow-lg ${
         node.className || "node-default"
-      } ${isDragging ? "opacity-75 scale-105 shadow-xl" : "shadow-md"}`}
+      } ${isDragging ? "opacity-75 scale-105 shadow-xl z-50" : "shadow-md"}`}
       style={{
         left: node.x - (node.sizeX || 120) / 2,
         top: node.y - (node.sizeY || 60) / 2,
@@ -101,27 +124,38 @@ const RectangleNode = ({
 
 const TriangleNode = ({
   node,
-  onDrag,
+  onDragStart,
+  onDragMove,
+  onDragEnd,
   isDragging,
-}: { node: NodeData; onDrag: (id: string, x: number, y: number) => void; isDragging: boolean }) => {
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    const startX = e.clientX - node.x
-    const startY = e.clientY - node.y
+}: {
+  node: NodeData
+  onDragStart: (id: string, startX: number, startY: number) => void
+  onDragMove: (clientX: number, clientY: number) => void
+  onDragEnd: () => void
+  isDragging: boolean
+}) => {
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      onDragStart(node.id, e.clientX, e.clientY)
 
-    const handleMouseMove = (e: MouseEvent) => {
-      onDrag(node.id, e.clientX - startX, e.clientY - startY)
-    }
+      const handleMouseMove = (e: MouseEvent) => {
+        onDragMove(e.clientX, e.clientY)
+      }
 
-    const handleMouseUp = () => {
-      document.removeEventListener("mousemove", handleMouseMove)
-      document.removeEventListener("mouseup", handleMouseUp)
-    }
+      const handleMouseUp = () => {
+        document.removeEventListener("mousemove", handleMouseMove)
+        document.removeEventListener("mouseup", handleMouseUp)
+        onDragEnd()
+      }
 
-    document.addEventListener("mousemove", handleMouseMove)
-    document.addEventListener("mouseup", handleMouseUp)
-  }
+      document.addEventListener("mousemove", handleMouseMove)
+      document.addEventListener("mouseup", handleMouseUp)
+    },
+    [node.id, onDragStart, onDragMove, onDragEnd],
+  )
 
   const size = node.sizeX || 70
   const triangleSize = size * 0.6
@@ -129,7 +163,7 @@ const TriangleNode = ({
   return (
     <div
       className={`absolute flex items-center justify-center cursor-move select-none transition-all duration-200 hover:scale-105 ${
-        isDragging ? "opacity-75 scale-105" : ""
+        isDragging ? "opacity-75 scale-105 z-50" : ""
       }`}
       style={{
         left: node.x - size / 2,
@@ -221,12 +255,17 @@ const SVGLink = ({ link, nodes }: { link: LinkData; nodes: NodeData[] }) => {
 }
 
 // Zoom Controls Component
-const ZoomControls = ({ onAutoFit }: { onAutoFit: () => void }) => {
+const ZoomControls = ({
+  onZoomIn,
+  onZoomOut,
+  onAutoFit,
+}: { onZoomIn: () => void; onZoomOut: () => void; onAutoFit: () => void }) => {
   return (
-    <div className="absolute top-3 right-3 z-10 flex flex-col gap-1 bg-white/90 backdrop-blur-sm rounded-lg p-1 shadow-md border border-slate-200/60">
+    <div className="absolute top-3 right-3 z-10 flex flex-col gap-1 bg-background/90 backdrop-blur-sm rounded-lg p-1 shadow-md border border-border">
       <button
-        className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors text-slate-600 hover:text-slate-800"
-        title="Zoom In (Mouse Wheel)"
+        onClick={onZoomIn}
+        className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+        title="Zoom In"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="11" cy="11" r="8" />
@@ -236,8 +275,9 @@ const ZoomControls = ({ onAutoFit }: { onAutoFit: () => void }) => {
         </svg>
       </button>
       <button
-        className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors text-slate-600 hover:text-slate-800"
-        title="Zoom Out (Mouse Wheel)"
+        onClick={onZoomOut}
+        className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+        title="Zoom Out"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="11" cy="11" r="8" />
@@ -247,7 +287,7 @@ const ZoomControls = ({ onAutoFit }: { onAutoFit: () => void }) => {
       </button>
       <button
         onClick={onAutoFit}
-        className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-slate-100 transition-colors text-slate-600 hover:text-slate-800"
+        className="w-7 h-7 flex items-center justify-center rounded-md hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
         title="Fit to Screen"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -260,31 +300,63 @@ const ZoomControls = ({ onAutoFit }: { onAutoFit: () => void }) => {
 
 export default function NetworkGraph() {
   const { nodes, links, legendData, isLoading, error, setNodes } = useGraphData()
+  const { theme, toggleTheme } = useTheme()
   const [isPanelMinimized, setIsPanelMinimized] = useState(false)
   const [zoom, setZoom] = useState(1)
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const [draggingNode, setDraggingNode] = useState<string | null>(null)
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const [isPanning, setIsPanning] = useState(false)
   const [lastPanPoint, setLastPanPoint] = useState({ x: 0, y: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const handleNodeDrag = useCallback(
-    (nodeId: string, x: number, y: number) => {
+  // Optimized node drag handlers
+  const handleNodeDragStart = useCallback(
+    (nodeId: string, startX: number, startY: number) => {
+      const rect = containerRef.current?.getBoundingClientRect()
+      if (!rect) return
+
+      const node = nodes.find((n) => n.id === nodeId)
+      if (!node) return
+
       setDraggingNode(nodeId)
-      setNodes((prev) =>
-        prev.map((node) =>
-          node.id === nodeId
-            ? {
-                ...node,
-                x: (x - pan.x) / zoom,
-                y: (y - pan.y) / zoom,
-              }
-            : node,
-        ),
-      )
+
+      // Calculate offset between mouse and node center
+      const containerX = startX - rect.left
+      const containerY = startY - rect.top
+      const nodeScreenX = node.x * zoom + pan.x
+      const nodeScreenY = node.y * zoom + pan.y
+
+      setDragOffset({
+        x: containerX - nodeScreenX,
+        y: containerY - nodeScreenY,
+      })
     },
-    [zoom, pan, setNodes],
+    [nodes, zoom, pan],
   )
+
+  const handleNodeDragMove = useCallback(
+    (clientX: number, clientY: number) => {
+      if (!draggingNode) return
+
+      const rect = containerRef.current?.getBoundingClientRect()
+      if (!rect) return
+
+      // Convert screen coordinates to graph coordinates with offset
+      const containerX = clientX - rect.left - dragOffset.x
+      const containerY = clientY - rect.top - dragOffset.y
+      const graphX = (containerX - pan.x) / zoom
+      const graphY = (containerY - pan.y) / zoom
+
+      setNodes((prev) => prev.map((node) => (node.id === draggingNode ? { ...node, x: graphX, y: graphY } : node)))
+    },
+    [draggingNode, dragOffset, pan, zoom, setNodes],
+  )
+
+  const handleNodeDragEnd = useCallback(() => {
+    setDraggingNode(null)
+    setDragOffset({ x: 0, y: 0 })
+  }, [])
 
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
@@ -309,25 +381,29 @@ export default function NetworkGraph() {
     [zoom, pan],
   )
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    const target = e.target as HTMLElement
-
-    if (target.style.pointerEvents === "all" || target.closest('[style*="pointer-events: all"]')) {
-      return
-    }
-
-    if (target.closest(".absolute") && target.closest('[class*="node-"]')) {
-      return
-    }
-
-    e.preventDefault()
-    setIsPanning(true)
-    setLastPanPoint({ x: e.clientX, y: e.clientY })
-  }, [])
-
-  const handleMouseMove = useCallback(
+  // Fixed canvas panning with proper event handling
+  const handleCanvasMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if (isPanning) {
+      // Only start panning if we're not clicking on a node
+      if (draggingNode) return
+
+      const target = e.target as HTMLElement
+
+      // Check if we clicked on a node or its children
+      if (target.closest("[data-node-id]") || target.style.pointerEvents === "all") {
+        return
+      }
+
+      e.preventDefault()
+      setIsPanning(true)
+      setLastPanPoint({ x: e.clientX, y: e.clientY })
+    },
+    [draggingNode],
+  )
+
+  const handleCanvasMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (isPanning && !draggingNode) {
         e.preventDefault()
         const deltaX = e.clientX - lastPanPoint.x
         const deltaY = e.clientY - lastPanPoint.y
@@ -335,12 +411,11 @@ export default function NetworkGraph() {
         setLastPanPoint({ x: e.clientX, y: e.clientY })
       }
     },
-    [isPanning, lastPanPoint],
+    [isPanning, lastPanPoint, draggingNode],
   )
 
-  const handleMouseUp = useCallback(() => {
+  const handleCanvasMouseUp = useCallback(() => {
     setIsPanning(false)
-    setDraggingNode(null)
   }, [])
 
   const handleAutoFit = useCallback(() => {
@@ -354,8 +429,45 @@ export default function NetworkGraph() {
     }
   }, [nodes])
 
+  const handleZoomIn = useCallback(() => {
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect) return
+
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const newZoom = Math.min(3, zoom * 1.2)
+
+    const newPan = {
+      x: centerX - (centerX - pan.x) * (newZoom / zoom),
+      y: centerY - (centerY - pan.y) * (newZoom / zoom),
+    }
+
+    setZoom(newZoom)
+    setPan(newPan)
+  }, [zoom, pan])
+
+  const handleZoomOut = useCallback(() => {
+    const rect = containerRef.current?.getBoundingClientRect()
+    if (!rect) return
+
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+    const newZoom = Math.max(0.1, zoom * 0.8)
+
+    const newPan = {
+      x: centerX - (centerX - pan.x) * (newZoom / zoom),
+      y: centerY - (centerY - pan.y) * (newZoom / zoom),
+    }
+
+    setZoom(newZoom)
+    setPan(newPan)
+  }, [zoom, pan])
+
   const handleResetAndReorganize = useCallback(() => {
-    const resetNodes = reorganizeNodes(nodes)
+    const containerRect = containerRef.current?.getBoundingClientRect()
+    if (!containerRect) return
+
+    const resetNodes = reorganizeNodes(nodes, containerRect.width, containerRect.height)
     setNodes(resetNodes)
     setTimeout(handleAutoFit, 100)
   }, [nodes, setNodes, handleAutoFit])
@@ -363,7 +475,7 @@ export default function NetworkGraph() {
   const handleExportPNG = useCallback(() => {
     if (containerRef.current) {
       toPng(containerRef.current, {
-        backgroundColor: "#ffffff",
+        backgroundColor: theme === "dark" ? "#0f172a" : "#ffffff",
         width: 1200,
         height: 800,
       }).then((dataUrl) => {
@@ -373,14 +485,36 @@ export default function NetworkGraph() {
         link.click()
       })
     }
-  }, [])
+  }, [theme])
+
+  // Memoize rendered nodes for performance
+  const renderedNodes = useMemo(() => {
+    return nodes.map((node) => {
+      const nodeProps = {
+        node,
+        onDragStart: handleNodeDragStart,
+        onDragMove: handleNodeDragMove,
+        onDragEnd: handleNodeDragEnd,
+        isDragging: draggingNode === node.id,
+      }
+
+      if (node.shape === "circle") {
+        return <CircleNode key={node.id} {...nodeProps} />
+      } else if (node.shape === "rectangle") {
+        return <RectangleNode key={node.id} {...nodeProps} />
+      } else if (node.shape === "triangle") {
+        return <TriangleNode key={node.id} {...nodeProps} />
+      }
+      return null
+    })
+  }, [nodes, draggingNode, handleNodeDragStart, handleNodeDragMove, handleNodeDragEnd])
 
   if (isLoading) {
     return (
-      <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100 items-center justify-center">
+      <div className="flex h-screen bg-gradient-to-br from-background to-muted items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 font-medium">Loading network graph data...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground font-medium">Loading network graph data...</p>
         </div>
       </div>
     )
@@ -388,44 +522,65 @@ export default function NetworkGraph() {
 
   if (error) {
     return (
-      <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100 items-center justify-center">
+      <div className="flex h-screen bg-gradient-to-br from-background to-muted items-center justify-center">
         <div className="text-center">
-          <div className="text-red-500 mb-4">⚠️</div>
-          <p className="text-slate-600 font-medium">Error loading graph data</p>
-          <p className="text-slate-500 text-sm mt-2">{error}</p>
+          <div className="text-destructive mb-4">⚠️</div>
+          <p className="text-foreground font-medium">Error loading graph data</p>
+          <p className="text-muted-foreground text-sm mt-2">{error}</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="flex h-screen bg-gradient-to-br from-background to-muted">
       {/* Control Panel */}
       <div
         className={`${
           isPanelMinimized ? "w-12" : "w-64"
-        } bg-white/80 backdrop-blur-sm border-r border-slate-200/60 transition-all duration-300 ease-in-out flex-shrink-0 shadow-sm`}
+        } bg-card/80 backdrop-blur-sm border-r border-border transition-all duration-300 ease-in-out flex-shrink-0 shadow-sm`}
       >
         <div className={isPanelMinimized ? "p-2" : "p-4"}>
-          <Button
-            onClick={() => setIsPanelMinimized(!isPanelMinimized)}
-            variant="ghost"
-            size="sm"
-            className={`mb-4 w-full rounded-lg hover:bg-slate-100/80 transition-colors ${
-              isPanelMinimized ? "px-2" : ""
-            }`}
-          >
-            {isPanelMinimized ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-            {!isPanelMinimized && <span className="ml-2 font-medium">Minimize</span>}
-          </Button>
+          <div className="flex items-center justify-between mb-4">
+            <Button
+              onClick={() => setIsPanelMinimized(!isPanelMinimized)}
+              variant="ghost"
+              size="sm"
+              className={`rounded-lg hover:bg-accent transition-colors ${isPanelMinimized ? "px-2 w-full" : ""}`}
+            >
+              {isPanelMinimized ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+              {!isPanelMinimized && <span className="ml-2 font-medium">Minimize</span>}
+            </Button>
+
+            {!isPanelMinimized && (
+              <Button
+                onClick={toggleTheme}
+                variant="ghost"
+                size="sm"
+                className="rounded-lg hover:bg-accent transition-colors"
+                title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+              >
+                {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              </Button>
+            )}
+          </div>
 
           {isPanelMinimized ? (
             <div className="space-y-2">
               <Button
+                onClick={toggleTheme}
+                variant="ghost"
+                size="sm"
+                className="w-full p-2 rounded-lg hover:bg-accent transition-colors"
+                title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+              >
+                {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              </Button>
+              <Button
                 onClick={handleAutoFit}
                 variant="ghost"
                 size="sm"
-                className="w-full p-2 rounded-lg hover:bg-slate-100/80 transition-colors"
+                className="w-full p-2 rounded-lg hover:bg-accent transition-colors"
                 title="Auto Fit"
               >
                 <Maximize className="w-4 h-4" />
@@ -434,7 +589,7 @@ export default function NetworkGraph() {
                 onClick={handleResetAndReorganize}
                 variant="ghost"
                 size="sm"
-                className="w-full p-2 rounded-lg hover:bg-slate-100/80 transition-colors"
+                className="w-full p-2 rounded-lg hover:bg-accent transition-colors"
                 title="Reorganize"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -443,7 +598,7 @@ export default function NetworkGraph() {
                 onClick={handleExportPNG}
                 variant="ghost"
                 size="sm"
-                className="w-full p-2 rounded-lg hover:bg-slate-100/80 transition-colors"
+                className="w-full p-2 rounded-lg hover:bg-accent transition-colors"
                 title="Export PNG"
               >
                 <Download className="w-4 h-4" />
@@ -451,16 +606,16 @@ export default function NetworkGraph() {
             </div>
           ) : (
             <>
-              <Card className="border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+              <Card className="border-0 shadow-sm bg-card/60 backdrop-blur-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold text-slate-800">Controls</CardTitle>
+                  <CardTitle className="text-base font-semibold text-card-foreground">Controls</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <Button
                     onClick={handleAutoFit}
                     variant="outline"
                     size="sm"
-                    className="w-full rounded-lg border-slate-200 hover:bg-slate-50 transition-colors"
+                    className="w-full rounded-lg border-border hover:bg-accent transition-colors"
                   >
                     <Maximize className="w-3 h-3 mr-2" />
                     Auto Fit
@@ -469,7 +624,7 @@ export default function NetworkGraph() {
                     onClick={handleResetAndReorganize}
                     variant="outline"
                     size="sm"
-                    className="w-full rounded-lg border-slate-200 hover:bg-slate-50 transition-colors"
+                    className="w-full rounded-lg border-border hover:bg-accent transition-colors"
                   >
                     <RotateCcw className="w-3 h-3 mr-2" />
                     Reorganize
@@ -477,7 +632,7 @@ export default function NetworkGraph() {
                   <Button
                     onClick={handleExportPNG}
                     size="sm"
-                    className="w-full rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
+                    className="w-full rounded-lg bg-primary hover:bg-primary/90 transition-colors"
                   >
                     <Download className="w-3 h-3 mr-2" />
                     Export PNG
@@ -485,9 +640,9 @@ export default function NetworkGraph() {
                 </CardContent>
               </Card>
 
-              <Card className="mt-4 border-0 shadow-sm bg-white/60 backdrop-blur-sm">
+              <Card className="mt-4 border-0 shadow-sm bg-card/60 backdrop-blur-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-semibold text-slate-800">Legend</CardTitle>
+                  <CardTitle className="text-sm font-semibold text-card-foreground">Legend</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-xs">
                   {legendData.map((item, index) => (
@@ -503,7 +658,7 @@ export default function NetworkGraph() {
                           </svg>
                         </div>
                       )}
-                      <span className="text-slate-600 font-medium">{item.label}</span>
+                      <span className="text-muted-foreground font-medium">{item.label}</span>
                     </div>
                   ))}
                 </CardContent>
@@ -514,17 +669,16 @@ export default function NetworkGraph() {
       </div>
 
       {/* Main Graph Area */}
-      <div className="flex-1 relative overflow-hidden bg-white rounded-tl-2xl shadow-inner" ref={containerRef}>
-        <ZoomControls onAutoFit={handleAutoFit} />
+      <div className="flex-1 relative overflow-hidden bg-card rounded-tl-2xl shadow-inner" ref={containerRef}>
+        <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onAutoFit={handleAutoFit} />
 
         <div
           className="graph-container absolute inset-0 cursor-grab active:cursor-grabbing"
-          style={{ pointerEvents: "all" }}
           onWheel={handleWheel}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          onMouseDown={handleCanvasMouseDown}
+          onMouseMove={handleCanvasMouseMove}
+          onMouseUp={handleCanvasMouseUp}
+          onMouseLeave={handleCanvasMouseUp}
         >
           <svg
             className="absolute pointer-events-none"
@@ -574,32 +728,7 @@ export default function NetworkGraph() {
               pointerEvents: "none",
             }}
           >
-            {nodes.map((node) => {
-              if (node.shape === "circle") {
-                return (
-                  <CircleNode key={node.id} node={node} onDrag={handleNodeDrag} isDragging={draggingNode === node.id} />
-                )
-              } else if (node.shape === "rectangle") {
-                return (
-                  <RectangleNode
-                    key={node.id}
-                    node={node}
-                    onDrag={handleNodeDrag}
-                    isDragging={draggingNode === node.id}
-                  />
-                )
-              } else if (node.shape === "triangle") {
-                return (
-                  <TriangleNode
-                    key={node.id}
-                    node={node}
-                    onDrag={handleNodeDrag}
-                    isDragging={draggingNode === node.id}
-                  />
-                )
-              }
-              return null
-            })}
+            {renderedNodes}
           </div>
 
           <div
@@ -614,7 +743,13 @@ export default function NetworkGraph() {
             <svg className="w-full h-full">
               <defs>
                 <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
-                  <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#e2e8f0" strokeWidth="0.5" />
+                  <path
+                    d="M 24 0 L 0 0 0 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="0.5"
+                    className={theme === "dark" ? "grid-pattern" : ""}
+                  />
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#grid)" />
@@ -622,7 +757,7 @@ export default function NetworkGraph() {
           </div>
         </div>
 
-        <div className="absolute bottom-3 left-3 text-xs text-slate-500 bg-white/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm">
+        <div className="absolute bottom-3 left-3 text-xs text-muted-foreground bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm">
           <div>Drag to pan • Mouse wheel to zoom • Drag nodes to move</div>
         </div>
       </div>
