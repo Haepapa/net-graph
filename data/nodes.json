@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "label": "Start",
+    "className": "node-success",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "2",
+    "label": "Process A",
+    "className": "node-primary",
+    "shape": "rectangle",
+    "sizeX": 120,
+    "sizeY": 60,
+    "x": 350,
+    "y": 150
+  },
+  {
+    "id": "3",
+    "label": "Decision",
+    "className": "node-warning",
+    "shape": "triangle",
+    "sizeX": 70,
+    "sizeY": 70,
+    "x": 550,
+    "y": 150
+  },
+  {
+    "id": "4",
+    "label": "Process B",
+    "className": "node-secondary",
+    "shape": "rectangle",
+    "sizeX": 120,
+    "sizeY": 60,
+    "x": 350,
+    "y": 300
+  },
+  {
+    "id": "5",
+    "label": "End",
+    "className": "node-danger",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 550,
+    "y": 300
+  }
+]

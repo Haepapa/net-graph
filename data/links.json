@@ -1,0 +1,42 @@
+[
+  {
+    "id": "link1",
+    "label": "Next",
+    "direction": "left-to-right",
+    "leftNodeId": "1",
+    "rightNodeId": "2",
+    "className": "link-primary"
+  },
+  {
+    "id": "link2",
+    "label": "Evaluate",
+    "direction": "left-to-right",
+    "leftNodeId": "2",
+    "rightNodeId": "3",
+    "className": "link-info"
+  },
+  {
+    "id": "link3",
+    "label": "Yes",
+    "direction": "left-to-right",
+    "leftNodeId": "3",
+    "rightNodeId": "4",
+    "className": "link-success"
+  },
+  {
+    "id": "link4",
+    "label": "Complete",
+    "direction": "left-to-right",
+    "leftNodeId": "4",
+    "rightNodeId": "5",
+    "className": "link-warning"
+  },
+  {
+    "id": "link5",
+    "label": "No",
+    "direction": "two-way",
+    "leftNodeId": "3",
+    "rightNodeId": "2",
+    "className": "link-danger"
+  }
+]
