@@ -1,8 +1,18 @@
 [
   {
-    "id": "1",
-    "label": "Start",
-    "className": "node-success",
+    "id": "ac71a28c-ca7b-41c1-b698-765e84a4b730",
+    "label": "script",
+    "className": "code.sas",
+    "shape": "rectangle",
+    "sizeX": 100,
+    "sizeY": 60,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "2da464be-6347-4180-9c8e-9c20c1392cf6",
+    "label": "dataset",
+    "className": "and",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
@@ -10,43 +20,233 @@
     "y": 150
   },
   {
-    "id": "2",
-    "label": "Process A",
-    "className": "node-primary",
-    "shape": "rectangle",
-    "sizeX": 120,
-    "sizeY": 60,
-    "x": 350,
-    "y": 150
-  },
-  {
-    "id": "3",
-    "label": "Decision",
-    "className": "node-warning",
-    "shape": "triangle",
-    "sizeX": 70,
-    "sizeY": 70,
-    "x": 550,
-    "y": 150
-  },
-  {
-    "id": "4",
-    "label": "Process B",
-    "className": "node-secondary",
-    "shape": "rectangle",
-    "sizeX": 120,
-    "sizeY": 60,
-    "x": 350,
-    "y": 300
-  },
-  {
-    "id": "5",
-    "label": "End",
-    "className": "node-danger",
+    "id": "5b04b658-2d1e-4622-bb39-73c1b092a78d",
+    "label": "dataset",
+    "className": "work.inPartiesnotusers",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
-    "x": 550,
-    "y": 300
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "33031258-cecf-4e9c-8e11-8a8a7b9af745",
+    "label": "dataset",
+    "className": "WORK.FLUX_MERIDIANALLCUSTOMERLIST",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "d8860d27-f5ff-4149-aeb7-22aa664978c3",
+    "label": "dataset",
+    "className": "work.Account_Partiesz",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "955cf0f4-44c9-4bde-8671-0e5b7a796dac",
+    "label": "dataset",
+    "className": "merisnap.HELD_ICPS",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "17a09b9d-772a-49b8-bb57-fc70042d73b1",
+    "label": "dataset",
+    "className": "work.HELD_ICPS_Switched_in",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "9dd91e82-7614-4582-9fde-120a39e6a83a",
+    "label": "dataset",
+    "className": "work.test",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "9604718f-99cb-4646-a3c6-bb4ef68fa0c9",
+    "label": "dataset",
+    "className": "work.test2",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "9cb40259-93f1-4c06-b52e-b3be88dc295e",
+    "label": "dataset",
+    "className": "work.customers",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "fbf007a2-c8ee-42b7-8c1f-82646499a0af",
+    "label": "dataset",
+    "className": "work.dups",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "e0b5dc08-6136-4a95-9879-ac8f66a0b582",
+    "label": "dataset",
+    "className": "WORK.ACCOUNT_PARTIES_Role",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "c5ff061d-2947-4e9e-9975-f31d7ca427c4",
+    "label": "dataset",
+    "className": "merisnap.Account_parties",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "3a086123-cc89-4ca2-ba60-01e399905558",
+    "label": "dataset",
+    "className": "work.account_partiesz1",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "a229db2b-11c4-4e4d-bc23-dec5ca7877a7",
+    "label": "dataset",
+    "className": "STAGINGB.FLUX_MERIDIANALLCUSTOMERLIST",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "99b58607-5ddd-4a23-9208-7046aa188ac5",
+    "label": "dataset",
+    "className": "work.extract",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "f2f831e6-6ff0-4d96-b541-ceef1381269c",
+    "label": "dataset",
+    "className": "work.z1",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "50ff857a-f817-45ab-a42f-51225af206ae",
+    "label": "dataset",
+    "className": "work.dups3",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "6c60261a-6476-4898-af44-0ea6ffdd772f",
+    "label": "dataset",
+    "className": "WORK.AXOS_Files",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "a67f5243-58d9-4320-8dc0-1b283cf15caf",
+    "label": "dataset",
+    "className": "work.AXOS_YEXPBIL_idS",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "c47c6d5a-4255-42ed-a31a-4b78f5cbb03e",
+    "label": "dataset",
+    "className": "work.AXOS_YEXPBIL_Billables1",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "e07006d3-73a0-4109-a901-8817138abf78",
+    "label": "dataset",
+    "className": "_null_",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "fad1973b-a4b7-4bc1-9299-5f975cf1e228",
+    "label": "dataset",
+    "className": "AXOS_YEXPBIL_BILLABLES1",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "b4210541-240d-409f-a404-6ec964c9bd52",
+    "label": "dataset",
+    "className": "WORK.AXOS_YEXPBIL_BILLABLES",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
+  },
+  {
+    "id": "062a22cf-52f5-4e54-9eb5-1f5345e6ab1e",
+    "label": "dataset",
+    "className": "work.AXOS_Files",
+    "shape": "circle",
+    "sizeX": 80,
+    "sizeY": 80,
+    "x": 150,
+    "y": 150
   }
 ]

@@ -4,7 +4,7 @@ import type { NodeData, LinkData, LegendData, GraphData } from "./types"
 const DEFAULT_NODES: NodeData[] = [
   {
     id: "1",
-    label: "Start",
+    label: "Start1",
     className: "node-success",
     shape: "circle",
     sizeX: 80,

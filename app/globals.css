@@ -186,3 +186,20 @@
   -moz-user-select: none;
   -ms-user-select: none;
 }
+
+.sas-script {
+  @apply bg-red-50 border-red-300 text-red-800;
+}
+.sas-egp {
+  @apply bg-red-50 border-red-300 text-red-800;
+}
+.writes .link-path {
+  stroke: #f27049;
+  stroke-dasharray: none;
+  opacity: 0.8;
+}
+.reads .link-path {
+  stroke: #53bbd5;
+  stroke-dasharray: none;
+  opacity: 0.8;
+}
