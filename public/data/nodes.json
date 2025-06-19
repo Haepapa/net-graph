@@ -1,442 +1,475 @@
 [
   {
-    "id": "4d64f92b-2c88-45c3-8a8e-59b10c60a52c",
+    "id": "e665229d-948f-486f-8b62-28fca0cb6433",
     "label": "data/SAS Example Code/ETL Build GXP Shape Files02.egp",
     "className": "sas-egp",
     "shape": "rectangle",
     "sizeX": 100,
     "sizeY": 60,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Enterprise Guide"
   },
   {
-    "id": "a1d554b7-483d-4ed0-879f-1c60d5e322de",
+    "id": "8a115012-0a0b-422a-9479-00b38d657955",
     "label": "work.ShapeDataPeriods2",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "0954d428-4a09-41b7-b1a4-edd02317865f",
+    "id": "02827a6f-06ee-4227-9003-c8d6bae5e75c",
     "label": "work.ShapeDataPeriods",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "93d4ce38-56a8-4af5-bf26-6e2706240d68",
+    "id": "6b9c63f9-7887-4acb-8d27-a6ef7103f3c1",
     "label": "STAGINGB.LIS_PROFILE_COUNT",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "9bd4f2b6-f5de-46b2-9f1a-67ffddeee93a",
+    "id": "83f6ae34-5c62-4c2f-9b1b-289770cc3019",
     "label": "work.LisProfileCount",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "39415587-5791-456d-8629-67f8c6372f64",
+    "id": "bf8932b5-be25-4dec-b1e6-d4b8b5e1e6e8",
     "label": "work.Pivoted_NHH_Shape",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "a2de4561-08bc-42b6-8c0d-302ce0bbae4b",
+    "id": "3cc54af9-5034-45aa-94b7-56e72fbeab3a",
     "label": "work.Pivoted_NHH_Shape_Error_Check",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "4e5db337-3084-4365-ab09-ac1e913fa0cd",
+    "id": "ebc3a463-ef6a-4a8c-adee-18108fa967cb",
     "label": "WORK.CHECK100PERCENTALLOCATION",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "7d48cac3-ea9b-45be-abc0-d303fb4b9277",
+    "id": "dd4c1433-49cf-4be0-8493-847d06e74d66",
     "label": "WORK.Check100percentAllocation",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "f15f8ddc-94c5-445d-9d19-2a42e433e997",
+    "id": "ad21dd89-402d-409d-9f64-8f32fd599ae3",
     "label": "WORK.PIVOTED_NHH_SHAPE_PASS1A1",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "387a76f5-d4fc-4b14-bb8d-f58f9a79bb17",
+    "id": "5e095c19-85fd-4065-a737-b5459f0880dd",
     "label": "WORK.PIVOTED_NHH_SHAPE_PASS1A",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "0cd4a650-71e0-4d86-87d5-242d192430f6",
+    "id": "d8e88284-c1ce-4646-aaf4-13dc4896737a",
     "label": "WORK.MEAN_PIVOTED_NHH_SHAPE_PASS1B",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "d7912991-7640-4a34-81c8-e861ae13e827",
+    "id": "6abc4f84-36a4-4468-a90b-f09a15e48fe3",
     "label": "WORK.PIVOTED_NHH_SHAPE_PASS1B",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "ae56b324-cfcb-4bab-8d59-b9a9c78206c6",
+    "id": "a00e8e7d-a976-4e97-9bf9-cf39db8f2e8c",
     "label": "WORK.PIVOTED_NHH_SHAPE_PASS1D",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "47fc875a-8400-4e7a-825a-c0d0078c066c",
+    "id": "e55c0d18-3ce8-4247-a8f1-74def2447afb",
     "label": "WORK.PIVOTED_NHH_SHAPE_PASS1E",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "926cc8bc-e923-4f8a-9b8a-1b088878c493",
+    "id": "7b38ca27-67b4-47ae-8482-10576f66caf4",
     "label": "Pivoted_NHH_Shape_Pass2",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "d91180fa-c21a-409c-ac26-7091354bc93a",
+    "id": "19fb2076-b0f3-4d52-aabb-d7943b125142",
     "label": "Pivoted_NHH_Shape_Pass2_Tot",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "87053e07-dc8a-434f-91dd-deddef175457",
+    "id": "09ecf1ee-ba15-4921-8e1e-ac951fce2027",
     "label": "Pivoted_NHH_Shape_Pass3",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "8f96feeb-ddc4-4367-8ccd-3baa127da6e2",
+    "id": "06790385-dc8f-467c-a6d3-c972bd8ad26d",
     "label": "Pivoted_NHH_Shape_Pass4",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "baa6cbd7-00a0-4320-9885-f3caeb226463",
+    "id": "3da42481-96fe-4237-8fce-d51e3863f761",
     "label": "WORK.PIV_LAST12MONTHS",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "566c480c-3ab3-4f15-8a4e-b1e6470deccb",
+    "id": "c8ac2e5c-dcd3-4d63-8236-3ecc262dd88c",
     "label": "WORK.SHAPE_REGRESSION_VALUES",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "87179261-1569-42b4-b469-1ff1d7a15ac6",
+    "id": "6bfc4154-ee38-475e-bc57-26e5c2742001",
     "label": "work.PIV_ShapeAdjt_Values",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "87f5ab05-7ff5-403e-820d-c81c5a434b27",
-    "label": "_null_",
-    "className": "sas-dataset",
-    "shape": "circle",
-    "sizeX": 80,
-    "sizeY": 80,
-    "x": 150,
-    "y": 150
-  },
-  {
-    "id": "3f00f3ed-29cc-4025-833c-9424a09edbad",
+    "id": "99f666c5-7e68-4d5d-bd4a-d4ac7c5592f4",
     "label": "Shape_Monthly_Adjt",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "f5011f3d-a3a9-4f40-8d25-296a66ef3f97",
+    "id": "3c738610-6ef7-4cd9-bb9a-aed9cb2db873",
     "label": "WORK.NSP_Mapping_Table",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "13958a3d-a9d1-4366-8b14-83ac55920a82",
+    "id": "4ff4b260-c798-4a46-af65-bd7b80de992d",
     "label": "work.Shape_Monthly_Adjt",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "5b68d172-fa9e-4a5d-a1e7-38465a596448",
+    "id": "f85ad86a-1ed5-4be5-835f-910ebefae3cc",
     "label": "PIVOTED_NHH_SHAPE_PASS1E",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "287501c0-a2af-4933-87b3-c869dab4f724",
+    "id": "8020fe31-ecea-402d-a6cb-d76d9794dc54",
     "label": "WORK.PIV_SHAPEADJT_VALUES",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "f894c0c4-6dcf-419e-ae2d-c076ee0becaa",
+    "id": "f03803b5-a8d1-4c4b-a5ce-1e08b96a043d",
     "label": "WORK.PIVOTED_NHH_SHAPE_PASS1E2",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "6cbf6cc4-7894-44bb-ab1b-b395056f851f",
+    "id": "1f38281e-8034-4ebb-a185-43a4feadab40",
     "label": "NSP_Mapping_table",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "612bc500-7db4-4d39-9505-b1f41ccc168e",
+    "id": "cb265790-5891-45d8-a369-8d266653ce80",
     "label": "work.NSP_Mapping_table",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "81c05332-dd58-48bb-8acf-42f0dd9bfcdb",
+    "id": "78a7b8fd-d7d5-4204-9e9e-80e2f89b8899",
     "label": "Shape_Regression_Values",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "5ed83d75-bd15-4e36-ae85-5e54df5afa7d",
+    "id": "1249e347-89c8-434b-bf14-470848680dc2",
     "label": "work.CHK_RSQ",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "1a5fa591-a1a7-4d10-acdc-ecab4f9d4bdc",
+    "id": "ed206682-edd8-42b8-a9e9-8ef3f1eeab67",
     "label": "SHAPE_MONTHLY_ADJT_Sorted",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "ce328afa-918e-4e9d-99b5-c3f6caaf47e8",
+    "id": "d488f860-d23c-42f0-84fd-310d859e7f0f",
     "label": "work.SHAPE_MONTHLY_ADJT_Sorted",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "cecf5d90-879d-420e-8977-faf2e0e3678d",
+    "id": "e4241d06-18d5-4e71-8309-2db721ee1b31",
     "label": "work.ShapeDataPeriods1",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "3653f414-1de9-454b-9b5e-3b8c02184756",
+    "id": "2c193646-cf52-41ba-8cd8-c0331cef0d13",
     "label": "WORK.NETWORK_POC_MAPPING",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "7c3f661a-9705-44dc-87be-7acdd098646f",
+    "id": "c7a1dd66-47cb-45f6-9287-006df390d25e",
     "label": "work.Pivoted_NHH_Shape_Pass3",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "bc64b5bd-1ab2-4715-88d7-a1d4cc850c87",
+    "id": "c02d8c8b-7a7d-4490-b515-942e25bc4fb3",
     "label": "work.PIVOTED_NHH_SHAPE_PASS_1H_A",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "aecf0e63-dd64-475b-ae0b-a2572e2d52b8",
+    "id": "1fa4e79c-d1c2-4fd3-9d2f-978cba284555",
     "label": "WORK.MEAN_PIVOTED_NHH_SHAPE_PASS1C",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "8aeacfa2-7392-492b-a8fb-93d97a3e0bb8",
+    "id": "d8fb72d7-4c85-4895-811c-4e1dd4e6dc4e",
     "label": "WORK.PIVOTED_NHH_SHAPE_PASS1C",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "f990e1ea-3073-404a-9df2-49749c3dc5ff",
+    "id": "28a2db22-9253-402f-9d4c-a2baad395867",
     "label": "work.PIVOTED_NHH_SHAPE_PASS_1H",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "432b889c-bd2b-48b5-9e78-1776e505fa51",
+    "id": "c2b37b76-5f6e-46ea-9baa-f205d98bb530",
     "label": "work.PIVOTED_NHH_SHAPE_PASS_1H_a",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   },
   {
-    "id": "b5638eff-c4d2-4535-859b-a74439cd6f2f",
+    "id": "55b02537-d50d-428e-af53-d859209f030e",
     "label": "WORK.MEAN_PIVOTED_NHH_SHAPE_PASS1A",
     "className": "sas-dataset",
     "shape": "circle",
     "sizeX": 80,
     "sizeY": 80,
     "x": 150,
-    "y": 150
+    "y": 150,
+    "type": "SAS Dataset"
   }
 ]

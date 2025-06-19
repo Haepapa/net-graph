@@ -1,6 +1,7 @@
 export interface NodeData {
   id: string
   label: string
+  type?: string
   className?: string
   shape: "circle" | "rectangle" | "triangle"
   sizeX?: number

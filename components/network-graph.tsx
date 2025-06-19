@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef, useCallback, useMemo } from "react"
+import { useState, useRef, useCallback, useMemo, useEffect } from "react"
 import { toPng } from "html-to-image"
 
 import { Button } from "@/components/ui/button"
@@ -11,42 +11,39 @@ import { Maximize, Download, ChevronLeft, ChevronRight, RotateCcw, Sun, Moon } f
 import { useGraphData } from "@/hooks/use-graph-data"
 import { useTheme } from "@/hooks/use-theme"
 import { getNodeConnectionPoint, calculateAutoFit, reorganizeNodes } from "@/lib/graph-utils"
+import { NodeDetailsPopup } from "./node-details-popup"
 import type { NodeData, LinkData } from "@/lib/types"
 
-// Node Components with optimized drag handling
+// Helper function to truncate labels with space stripping
+const truncateLabel = (label: string, maxLength = 12): string => {
+  const trimmedLabel = label.trim() // Strip leading and trailing spaces
+  if (trimmedLabel.length <= maxLength) return trimmedLabel
+  return "..." + trimmedLabel.slice(-(maxLength - 3))
+}
+
+// Node Components with completely rewritten drag handling
 const CircleNode = ({
   node,
-  onDragStart,
-  onDragMove,
-  onDragEnd,
+  onNodeMouseDown,
+  onClick,
   isDragging,
+  zoom,
+  pan,
 }: {
   node: NodeData
-  onDragStart: (id: string, startX: number, startY: number) => void
-  onDragMove: (clientX: number, clientY: number) => void
-  onDragEnd: () => void
+  onNodeMouseDown: (nodeId: string, e: React.MouseEvent) => void
+  onClick: (node: NodeData) => void
   isDragging: boolean
+  zoom: number
+  pan: { x: number; y: number }
 }) => {
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      onDragStart(node.id, e.clientX, e.clientY)
-
-      const handleMouseMove = (e: MouseEvent) => {
-        onDragMove(e.clientX, e.clientY)
-      }
-
-      const handleMouseUp = () => {
-        document.removeEventListener("mousemove", handleMouseMove)
-        document.removeEventListener("mouseup", handleMouseUp)
-        onDragEnd()
-      }
-
-      document.addEventListener("mousemove", handleMouseMove)
-      document.addEventListener("mouseup", handleMouseUp)
+      onNodeMouseDown(node.id, e)
     },
-    [node.id, onDragStart, onDragMove, onDragEnd],
+    [node.id, onNodeMouseDown],
   )
 
   return (
@@ -55,52 +52,41 @@ const CircleNode = ({
         node.className || "node-default"
       } ${isDragging ? "opacity-75 scale-105 shadow-xl z-50" : "shadow-md"}`}
       style={{
-        left: node.x - (node.sizeX || 80) / 2,
-        top: node.y - (node.sizeY || 80) / 2,
+        left: node.x * zoom + pan.x - (node.sizeX || 80) / 2,
+        top: node.y * zoom + pan.y - (node.sizeY || 80) / 2,
         width: node.sizeX || 80,
         height: node.sizeY || 80,
-        pointerEvents: "all",
       }}
       onMouseDown={handleMouseDown}
+      data-node-id={node.id}
     >
-      {node.label}
+      {truncateLabel(node.label)}
     </div>
   )
 }
 
 const RectangleNode = ({
   node,
-  onDragStart,
-  onDragMove,
-  onDragEnd,
+  onNodeMouseDown,
+  onClick,
   isDragging,
+  zoom,
+  pan,
 }: {
   node: NodeData
-  onDragStart: (id: string, startX: number, startY: number) => void
-  onDragMove: (clientX: number, clientY: number) => void
-  onDragEnd: () => void
+  onNodeMouseDown: (nodeId: string, e: React.MouseEvent) => void
+  onClick: (node: NodeData) => void
   isDragging: boolean
+  zoom: number
+  pan: { x: number; y: number }
 }) => {
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      onDragStart(node.id, e.clientX, e.clientY)
-
-      const handleMouseMove = (e: MouseEvent) => {
-        onDragMove(e.clientX, e.clientY)
-      }
-
-      const handleMouseUp = () => {
-        document.removeEventListener("mousemove", handleMouseMove)
-        document.removeEventListener("mouseup", handleMouseUp)
-        onDragEnd()
-      }
-
-      document.addEventListener("mousemove", handleMouseMove)
-      document.addEventListener("mouseup", handleMouseUp)
+      onNodeMouseDown(node.id, e)
     },
-    [node.id, onDragStart, onDragMove, onDragEnd],
+    [node.id, onNodeMouseDown],
   )
 
   return (
@@ -109,52 +95,41 @@ const RectangleNode = ({
         node.className || "node-default"
       } ${isDragging ? "opacity-75 scale-105 shadow-xl z-50" : "shadow-md"}`}
       style={{
-        left: node.x - (node.sizeX || 120) / 2,
-        top: node.y - (node.sizeY || 60) / 2,
+        left: node.x * zoom + pan.x - (node.sizeX || 120) / 2,
+        top: node.y * zoom + pan.y - (node.sizeY || 60) / 2,
         width: node.sizeX || 120,
         height: node.sizeY || 60,
-        pointerEvents: "all",
       }}
       onMouseDown={handleMouseDown}
+      data-node-id={node.id}
     >
-      {node.label}
+      {truncateLabel(node.label)}
     </div>
   )
 }
 
 const TriangleNode = ({
   node,
-  onDragStart,
-  onDragMove,
-  onDragEnd,
+  onNodeMouseDown,
+  onClick,
   isDragging,
+  zoom,
+  pan,
 }: {
   node: NodeData
-  onDragStart: (id: string, startX: number, startY: number) => void
-  onDragMove: (clientX: number, clientY: number) => void
-  onDragEnd: () => void
+  onNodeMouseDown: (nodeId: string, e: React.MouseEvent) => void
+  onClick: (node: NodeData) => void
   isDragging: boolean
+  zoom: number
+  pan: { x: number; y: number }
 }) => {
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault()
       e.stopPropagation()
-      onDragStart(node.id, e.clientX, e.clientY)
-
-      const handleMouseMove = (e: MouseEvent) => {
-        onDragMove(e.clientX, e.clientY)
-      }
-
-      const handleMouseUp = () => {
-        document.removeEventListener("mousemove", handleMouseMove)
-        document.removeEventListener("mouseup", handleMouseUp)
-        onDragEnd()
-      }
-
-      document.addEventListener("mousemove", handleMouseMove)
-      document.addEventListener("mouseup", handleMouseUp)
+      onNodeMouseDown(node.id, e)
     },
-    [node.id, onDragStart, onDragMove, onDragEnd],
+    [node.id, onNodeMouseDown],
   )
 
   const size = node.sizeX || 70
@@ -166,13 +141,13 @@ const TriangleNode = ({
         isDragging ? "opacity-75 scale-105 z-50" : ""
       }`}
       style={{
-        left: node.x - size / 2,
-        top: node.y - size / 2,
+        left: node.x * zoom + pan.x - size / 2,
+        top: node.y * zoom + pan.y - size / 2,
         width: size,
         height: size,
-        pointerEvents: "all",
       }}
       onMouseDown={handleMouseDown}
+      data-node-id={node.id}
     >
       <div className="relative">
         <svg width={triangleSize} height={triangleSize} className="drop-shadow-md">
@@ -185,7 +160,7 @@ const TriangleNode = ({
           />
         </svg>
         <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold mt-2">
-          {node.label}
+          {truncateLabel(node.label)}
         </span>
       </div>
     </div>
@@ -308,55 +283,88 @@ export default function NetworkGraph() {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const [isPanning, setIsPanning] = useState(false)
   const [lastPanPoint, setLastPanPoint] = useState({ x: 0, y: 0 })
+  const [selectedNode, setSelectedNode] = useState<NodeData | null>(null)
+  const [hasInitialized, setHasInitialized] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  // Optimized node drag handlers
-  const handleNodeDragStart = useCallback(
-    (nodeId: string, startX: number, startY: number) => {
+  // Node click handler
+  const handleNodeClick = useCallback((node: NodeData) => {
+    setSelectedNode(node)
+  }, [])
+
+  // Close popup handler
+  const handleClosePopup = useCallback(() => {
+    setSelectedNode(null)
+  }, [])
+
+  // Completely rewritten drag system
+  const handleNodeMouseDown = useCallback(
+    (nodeId: string, e: React.MouseEvent) => {
       const rect = containerRef.current?.getBoundingClientRect()
       if (!rect) return
 
       const node = nodes.find((n) => n.id === nodeId)
       if (!node) return
 
+      let hasMoved = false
+      const startX = e.clientX
+      const startY = e.clientY
+
       setDraggingNode(nodeId)
 
-      // Calculate offset between mouse and node center
-      const containerX = startX - rect.left
-      const containerY = startY - rect.top
+      // Calculate initial offset between mouse and node center
+      const mouseX = e.clientX - rect.left
+      const mouseY = e.clientY - rect.top
       const nodeScreenX = node.x * zoom + pan.x
       const nodeScreenY = node.y * zoom + pan.y
 
       setDragOffset({
-        x: containerX - nodeScreenX,
-        y: containerY - nodeScreenY,
+        x: mouseX - nodeScreenX,
+        y: mouseY - nodeScreenY,
       })
+
+      const handleMouseMove = (e: MouseEvent) => {
+        const deltaX = Math.abs(e.clientX - startX)
+        const deltaY = Math.abs(e.clientY - startY)
+
+        if (deltaX > 3 || deltaY > 3) {
+          hasMoved = true
+        }
+
+        if (!containerRef.current) return
+
+        const rect = containerRef.current.getBoundingClientRect()
+        const mouseX = e.clientX - rect.left
+        const mouseY = e.clientY - rect.top
+
+        // Calculate new node position
+        const nodeScreenX = mouseX - dragOffset.x
+        const nodeScreenY = mouseY - dragOffset.y
+
+        // Convert to graph coordinates
+        const graphX = (nodeScreenX - pan.x) / zoom
+        const graphY = (nodeScreenY - pan.y) / zoom
+
+        setNodes((prev) => prev.map((n) => (n.id === nodeId ? { ...n, x: graphX, y: graphY } : n)))
+      }
+
+      const handleMouseUp = () => {
+        document.removeEventListener("mousemove", handleMouseMove)
+        document.removeEventListener("mouseup", handleMouseUp)
+        setDraggingNode(null)
+        setDragOffset({ x: 0, y: 0 })
+
+        // Only trigger click if we didn't drag
+        if (!hasMoved) {
+          handleNodeClick(node)
+        }
+      }
+
+      document.addEventListener("mousemove", handleMouseMove)
+      document.addEventListener("mouseup", handleMouseUp)
     },
-    [nodes, zoom, pan],
+    [nodes, zoom, pan, dragOffset, setNodes, handleNodeClick],
   )
-
-  const handleNodeDragMove = useCallback(
-    (clientX: number, clientY: number) => {
-      if (!draggingNode) return
-
-      const rect = containerRef.current?.getBoundingClientRect()
-      if (!rect) return
-
-      // Convert screen coordinates to graph coordinates with offset
-      const containerX = clientX - rect.left - dragOffset.x
-      const containerY = clientY - rect.top - dragOffset.y
-      const graphX = (containerX - pan.x) / zoom
-      const graphY = (containerY - pan.y) / zoom
-
-      setNodes((prev) => prev.map((node) => (node.id === draggingNode ? { ...node, x: graphX, y: graphY } : node)))
-    },
-    [draggingNode, dragOffset, pan, zoom, setNodes],
-  )
-
-  const handleNodeDragEnd = useCallback(() => {
-    setDraggingNode(null)
-    setDragOffset({ x: 0, y: 0 })
-  }, [])
 
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
@@ -381,18 +389,15 @@ export default function NetworkGraph() {
     [zoom, pan],
   )
 
-  // Fixed canvas panning with proper event handling
+  // Canvas panning - only when not dragging a node
   const handleCanvasMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      // Only start panning if we're not clicking on a node
+      // Don't start panning if we're dragging a node
       if (draggingNode) return
 
+      // Don't start panning if clicking on a node
       const target = e.target as HTMLElement
-
-      // Check if we clicked on a node or its children
-      if (target.closest("[data-node-id]") || target.style.pointerEvents === "all") {
-        return
-      }
+      if (target.closest("[data-node-id]")) return
 
       e.preventDefault()
       setIsPanning(true)
@@ -487,15 +492,27 @@ export default function NetworkGraph() {
     }
   }, [theme])
 
+  // Auto-initialize on first load
+  useEffect(() => {
+    if (!isLoading && !error && nodes.length > 0 && !hasInitialized && containerRef.current) {
+      // Wait a bit for the container to be properly sized
+      setTimeout(() => {
+        handleResetAndReorganize()
+        setHasInitialized(true)
+      }, 100)
+    }
+  }, [isLoading, error, nodes.length, hasInitialized, handleResetAndReorganize])
+
   // Memoize rendered nodes for performance
   const renderedNodes = useMemo(() => {
     return nodes.map((node) => {
       const nodeProps = {
         node,
-        onDragStart: handleNodeDragStart,
-        onDragMove: handleNodeDragMove,
-        onDragEnd: handleNodeDragEnd,
+        onNodeMouseDown: handleNodeMouseDown,
+        onClick: handleNodeClick,
         isDragging: draggingNode === node.id,
+        zoom,
+        pan,
       }
 
       if (node.shape === "circle") {
@@ -507,7 +524,7 @@ export default function NetworkGraph() {
       }
       return null
     })
-  }, [nodes, draggingNode, handleNodeDragStart, handleNodeDragMove, handleNodeDragEnd])
+  }, [nodes, draggingNode, handleNodeMouseDown, handleNodeClick, zoom, pan])
 
   if (isLoading) {
     return (
@@ -719,48 +736,18 @@ export default function NetworkGraph() {
             </g>
           </svg>
 
-          <div
-            className="absolute inset-0"
-            style={{
-              zIndex: 2,
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              transformOrigin: "0 0",
-              pointerEvents: "none",
-            }}
-          >
+          <div className="absolute inset-0" style={{ zIndex: 2 }}>
             {renderedNodes}
-          </div>
-
-          <div
-            className="absolute inset-0 opacity-30"
-            style={{
-              zIndex: 0,
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              transformOrigin: "0 0",
-              pointerEvents: "none",
-            }}
-          >
-            <svg className="w-full h-full">
-              <defs>
-                <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse">
-                  <path
-                    d="M 24 0 L 0 0 0 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="0.5"
-                    className={theme === "dark" ? "grid-pattern" : ""}
-                  />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#grid)" />
-            </svg>
           </div>
         </div>
 
         <div className="absolute bottom-3 left-3 text-xs text-muted-foreground bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm">
-          <div>Drag to pan • Mouse wheel to zoom • Drag nodes to move</div>
+          <div>Drag to pan • Mouse wheel to zoom • Drag nodes to move • Click nodes for details</div>
         </div>
       </div>
+
+      {/* Node Details Popup */}
+      <NodeDetailsPopup node={selectedNode} onClose={handleClosePopup} />
     </div>
   )
 }
