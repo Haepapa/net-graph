@@ -6,26 +6,14 @@ import { toPng } from "html-to-image"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Maximize,
-  Download,
-  ChevronLeft,
-  ChevronRight,
-  RotateCcw,
-  Sun,
-  Moon,
-  Grid3X3,
-  Zap,
-  FilterX,
-} from "lucide-react"
+import { Maximize, Download, ChevronLeft, ChevronRight, RotateCcw, Sun, Moon, FilterX } from "lucide-react"
 
 import { useGraphData } from "@/hooks/use-graph-data"
 import { useTheme } from "@/hooks/use-theme"
 import { getNodeConnectionPoint, calculateAutoFit, reorganizeNodes } from "@/lib/graph-utils"
 import { NodeDetailsPopup } from "./node-details-popup"
-import { ForceControls } from "./force-controls"
 import { SearchBox } from "./search-box"
-import { ForceSimulation, type SimulationNode } from "@/lib/force-simulation"
+import { SpacingControls } from "./spacing-controls"
 import type { NodeData, LinkData } from "@/lib/types"
 
 // Helper function to truncate labels with space stripping
@@ -35,7 +23,7 @@ const truncateLabel = (label: string, maxLength = 12): string => {
   return "..." + trimmedLabel.slice(-(maxLength - 3))
 }
 
-// Optimized Node Components with performance improvements
+// Optimized Node Components with performance improvements and zoom scaling
 const CircleNode = React.memo(
   ({
     node,
@@ -65,20 +53,25 @@ const CircleNode = React.memo(
       [node.id, onNodeMouseDown],
     )
 
+    // Scale node size with zoom level
+    const scaledSizeX = (node.sizeX || 80) * zoom
+    const scaledSizeY = (node.sizeY || 80) * zoom
+
     const style = useMemo(
       () => ({
-        left: node.x * zoom + pan.x - (node.sizeX || 80) / 2,
-        top: node.y * zoom + pan.y - (node.sizeY || 80) / 2,
-        width: node.sizeX || 80,
-        height: node.sizeY || 80,
+        left: node.x * zoom + pan.x - scaledSizeX / 2,
+        top: node.y * zoom + pan.y - scaledSizeY / 2,
+        width: scaledSizeX,
+        height: scaledSizeY,
+        fontSize: Math.max(10, 14 * zoom), // Scale font size with zoom
         willChange: isDragging ? "transform" : "auto",
       }),
-      [node.x, node.y, node.sizeX, node.sizeY, zoom, pan.x, pan.y, isDragging],
+      [node.x, node.y, scaledSizeX, scaledSizeY, zoom, pan.x, pan.y, isDragging],
     )
 
     return (
       <div
-        className={`absolute rounded-full border-2 flex items-center justify-center text-sm font-semibold cursor-move select-none transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+        className={`absolute rounded-full border-2 flex items-center justify-center font-semibold cursor-move select-none transition-all duration-200 hover:scale-105 hover:shadow-lg ${
           node.className || "node-default"
         } ${isDragging ? "opacity-75 scale-105 shadow-xl z-50" : "shadow-md"} ${
           isSearchHighlighted ? "node-search-highlight" : ""
@@ -122,20 +115,25 @@ const RectangleNode = React.memo(
       [node.id, onNodeMouseDown],
     )
 
+    // Scale node size with zoom level
+    const scaledSizeX = (node.sizeX || 120) * zoom
+    const scaledSizeY = (node.sizeY || 60) * zoom
+
     const style = useMemo(
       () => ({
-        left: node.x * zoom + pan.x - (node.sizeX || 120) / 2,
-        top: node.y * zoom + pan.y - (node.sizeY || 60) / 2,
-        width: node.sizeX || 120,
-        height: node.sizeY || 60,
+        left: node.x * zoom + pan.x - scaledSizeX / 2,
+        top: node.y * zoom + pan.y - scaledSizeY / 2,
+        width: scaledSizeX,
+        height: scaledSizeY,
+        fontSize: Math.max(10, 14 * zoom), // Scale font size with zoom
         willChange: isDragging ? "transform" : "auto",
       }),
-      [node.x, node.y, node.sizeX, node.sizeY, zoom, pan.x, pan.y, isDragging],
+      [node.x, node.y, scaledSizeX, scaledSizeY, zoom, pan.x, pan.y, isDragging],
     )
 
     return (
       <div
-        className={`absolute rounded-xl border-2 flex items-center justify-center text-sm font-semibold cursor-move select-none transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+        className={`absolute rounded-xl border-2 flex items-center justify-center font-semibold cursor-move select-none transition-all duration-200 hover:scale-105 hover:shadow-lg ${
           node.className || "node-default"
         } ${isDragging ? "opacity-75 scale-105 shadow-xl z-50" : "shadow-md"} ${
           isSearchHighlighted ? "node-search-highlight" : ""
@@ -179,18 +177,20 @@ const TriangleNode = React.memo(
       [node.id, onNodeMouseDown],
     )
 
-    const size = node.sizeX || 70
-    const triangleSize = size * 0.6
+    // Scale node size with zoom level
+    const scaledSize = (node.sizeX || 70) * zoom
+    const triangleSize = scaledSize * 0.6
 
     const style = useMemo(
       () => ({
-        left: node.x * zoom + pan.x - size / 2,
-        top: node.y * zoom + pan.y - size / 2,
-        width: size,
-        height: size,
+        left: node.x * zoom + pan.x - scaledSize / 2,
+        top: node.y * zoom + pan.y - scaledSize / 2,
+        width: scaledSize,
+        height: scaledSize,
+        fontSize: Math.max(8, 12 * zoom), // Scale font size with zoom
         willChange: isDragging ? "transform" : "auto",
       }),
-      [node.x, node.y, size, zoom, pan.x, pan.y, isDragging],
+      [node.x, node.y, scaledSize, zoom, pan.x, pan.y, isDragging],
     )
 
     return (
@@ -208,11 +208,11 @@ const TriangleNode = React.memo(
               points={`${triangleSize / 2},5 ${triangleSize - 5},${triangleSize - 5} 5,${triangleSize - 5}`}
               className={node.className || "node-default"}
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth={Math.max(1, 2 * zoom)} // Scale stroke width with zoom
               filter="drop-shadow(0 2px 4px rgba(0,0,0,0.1))"
             />
           </svg>
-          <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold mt-2">
+          <span className="absolute inset-0 flex items-center justify-center font-semibold mt-2">
             {truncateLabel(node.label)}
           </span>
         </div>
@@ -221,9 +221,9 @@ const TriangleNode = React.memo(
   },
 )
 
-// Optimized SVG Link Component
+// Optimized SVG Link Component with zoom scaling and max width limit
 const SVGLink = React.memo(
-  ({ link, nodes, isFiltered }: { link: LinkData; nodes: NodeData[]; isFiltered: boolean }) => {
+  ({ link, nodes, isFiltered, zoom }: { link: LinkData; nodes: NodeData[]; isFiltered: boolean; zoom: number }) => {
     const sourceNode = nodes.find((n) => n.id === link.leftNodeId)
     const targetNode = nodes.find((n) => n.id === link.rightNodeId)
 
@@ -261,13 +261,18 @@ const SVGLink = React.memo(
 
     if (!sourceNode || !targetNode) return null
 
+    // Remove zoom scaling from stroke width - keep lines consistent thickness
+    const baseStrokeWidth = 2
+    const strokeWidth = baseStrokeWidth // Fixed width, no zoom scaling
+    const scaledFontSize = Math.max(8, 11 * zoom)
+
     return (
       <g className={`link ${link.className || "link-default"} ${isFiltered ? "link-filtered-out" : ""}`}>
         <path
           d={pathData}
           fill="none"
           className="link-path"
-          strokeWidth="3"
+          strokeWidth={strokeWidth}
           markerEnd={link.direction !== "right-to-left" ? `url(#arrowhead-${link.className || "default"})` : undefined}
           markerStart={
             link.direction === "right-to-left" || link.direction === "two-way"
@@ -276,14 +281,20 @@ const SVGLink = React.memo(
           }
         />
         <rect
-          x={labelPosition.x - link.label.length * 4}
-          y={labelPosition.y - 8}
-          width={link.label.length * 8}
-          height={16}
-          rx="8"
+          x={labelPosition.x - (link.label.length * scaledFontSize) / 2.5}
+          y={labelPosition.y - scaledFontSize / 2}
+          width={(link.label.length * scaledFontSize) / 1.25}
+          height={scaledFontSize * 1.5}
+          rx={scaledFontSize / 2}
           className="link-label-bg"
         />
-        <text x={labelPosition.x} y={labelPosition.y + 1} textAnchor="middle" className="link-label-text">
+        <text
+          x={labelPosition.x}
+          y={labelPosition.y + scaledFontSize / 4}
+          textAnchor="middle"
+          className="link-label-text"
+          fontSize={scaledFontSize}
+        >
           {link.label}
         </text>
       </g>
@@ -347,19 +358,7 @@ export default function NetworkGraph() {
   const [lastPanPoint, setLastPanPoint] = useState({ x: 0, y: 0 })
   const [selectedNode, setSelectedNode] = useState<NodeData | null>(null)
   const [hasInitialized, setHasInitialized] = useState(false)
-  const [layoutMode, setLayoutMode] = useState<"grid" | "force">("grid")
-  const [isSimulationRunning, setIsSimulationRunning] = useState(false)
-  const [forceConfig, setForceConfig] = useState({
-    repulsionStrength: 500,
-    maxRepulsionDistance: 150,
-    linkStrength: 0.1,
-    linkDistance: 100,
-    uniformSpacingStrength: 0.05,
-    idealSpacing: 400,
-    damping: 0.92,
-  })
-  const [averageDistance, setAverageDistance] = useState<number | undefined>(undefined)
-  const [idealSpacing, setIdealSpacing] = useState<number | undefined>(undefined)
+  const [nodeSpacing, setNodeSpacing] = useState(1500) // Default to middle range
 
   // Search and Filter states
   const [searchResults, setSearchResults] = useState<string[]>([])
@@ -368,52 +367,6 @@ export default function NetworkGraph() {
   const [isFiltered, setIsFiltered] = useState(false)
 
   const containerRef = useRef<HTMLDivElement>(null)
-  const simulationRef = useRef<ForceSimulation | null>(null)
-  const animationFrameRef = useRef<number | null>(null)
-
-  // Initialize force simulation
-  useEffect(() => {
-    simulationRef.current = new ForceSimulation(forceConfig)
-
-    simulationRef.current.setOnUpdate((simulationNodes: SimulationNode[]) => {
-      // Skip requestAnimationFrame if we're currently dragging a node for instant updates
-      if (draggingNode) {
-        setNodes(simulationNodes.map(({ vx, vy, fx, fy, ...node }) => node))
-        return
-      }
-
-      // Use requestAnimationFrame for smooth updates when not dragging
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-
-      animationFrameRef.current = requestAnimationFrame(() => {
-        setNodes(simulationNodes.map(({ vx, vy, fx, fy, ...node }) => node))
-      })
-    })
-
-    return () => {
-      if (simulationRef.current) {
-        simulationRef.current.stop()
-      }
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-    }
-  }, [setNodes, draggingNode])
-
-  // Update simulation when nodes or links change
-  useEffect(() => {
-    if (simulationRef.current && layoutMode === "force") {
-      simulationRef.current.setNodes(nodes)
-      simulationRef.current.setLinks(links)
-
-      const containerRect = containerRef.current?.getBoundingClientRect()
-      if (containerRect) {
-        simulationRef.current.setContainerSize(containerRect.width, containerRect.height)
-      }
-    }
-  }, [nodes, links, layoutMode])
 
   // Search functionality
   const handleSearch = useCallback(
@@ -473,7 +426,12 @@ export default function NetworkGraph() {
     setSelectedNode(null)
   }, [])
 
-  // Completely rewritten drag system for instant response
+  // Node spacing change handler
+  const handleSpacingChange = useCallback((spacing: number) => {
+    setNodeSpacing(spacing)
+  }, [])
+
+  // Drag system for node movement
   const handleNodeMouseDown = useCallback(
     (nodeId: string, e: React.MouseEvent) => {
       const rect = containerRef.current?.getBoundingClientRect()
@@ -521,17 +479,8 @@ export default function NetworkGraph() {
         const graphX = (nodeScreenX - pan.x) / zoom
         const graphY = (nodeScreenY - pan.y) / zoom
 
-        // Update position immediately and synchronously - no requestAnimationFrame
-        if (simulationRef.current && layoutMode === "force") {
-          // Fix node position in simulation for instant response
-          simulationRef.current.fixNode(nodeId, graphX, graphY)
-          // Force immediate update without waiting for animation frame
-          const updatedNodes = simulationRef.current.getNodes()
-          setNodes(updatedNodes.map(({ vx, vy, fx, fy, ...node }) => node))
-        } else {
-          // Direct position update for grid mode
-          setNodes((prev) => prev.map((n) => (n.id === nodeId ? { ...n, x: graphX, y: graphY } : n)))
-        }
+        // Direct position update
+        setNodes((prev) => prev.map((n) => (n.id === nodeId ? { ...n, x: graphX, y: graphY } : n)))
       }
 
       const handleMouseUp = () => {
@@ -539,11 +488,6 @@ export default function NetworkGraph() {
         document.removeEventListener("mouseup", handleMouseUp)
         setDraggingNode(null)
         setDragOffset({ x: 0, y: 0 })
-
-        // Unfix node in force simulation
-        if (simulationRef.current && layoutMode === "force") {
-          simulationRef.current.unfixNode(nodeId)
-        }
 
         // Only trigger click if we didn't drag
         if (!hasMoved) {
@@ -554,7 +498,7 @@ export default function NetworkGraph() {
       document.addEventListener("mousemove", handleMouseMove)
       document.addEventListener("mouseup", handleMouseUp)
     },
-    [nodes, zoom, pan, dragOffset, setNodes, handleNodeClick, layoutMode],
+    [nodes, zoom, pan, dragOffset, setNodes, handleNodeClick],
   )
 
   // Optimized wheel handler
@@ -662,64 +606,11 @@ export default function NetworkGraph() {
     const containerRect = containerRef.current?.getBoundingClientRect()
     if (!containerRect) return
 
-    if (layoutMode === "grid") {
-      const resetNodes = reorganizeNodes(nodes, containerRect.width, containerRect.height)
-      setNodes(resetNodes)
-      setTimeout(handleAutoFit, 100)
-    } else {
-      // Force layout
-      if (simulationRef.current) {
-        simulationRef.current.setContainerSize(containerRect.width, containerRect.height)
-        simulationRef.current.restart()
-        setIsSimulationRunning(true)
-      }
-    }
-  }, [nodes, setNodes, handleAutoFit, layoutMode])
-
-  const handleToggleLayout = useCallback(() => {
-    const newMode = layoutMode === "grid" ? "force" : "grid"
-    setLayoutMode(newMode)
-
-    if (newMode === "force") {
-      handleResetAndReorganize()
-    } else {
-      if (simulationRef.current) {
-        simulationRef.current.stop()
-        setIsSimulationRunning(false)
-      }
-    }
-  }, [layoutMode, handleResetAndReorganize])
-
-  const handleToggleSimulation = useCallback(() => {
-    if (!simulationRef.current) return
-
-    if (isSimulationRunning) {
-      simulationRef.current.stop()
-      setIsSimulationRunning(false)
-    } else {
-      simulationRef.current.start()
-      setIsSimulationRunning(true)
-    }
-  }, [isSimulationRunning])
-
-  const handleRestartSimulation = useCallback(() => {
-    if (simulationRef.current) {
-      simulationRef.current.restart()
-      setIsSimulationRunning(true)
-    }
-  }, [])
-
-  const handleForceConfigChange = useCallback(
-    (newConfig: Partial<typeof forceConfig>) => {
-      const updatedConfig = { ...forceConfig, ...newConfig }
-      setForceConfig(updatedConfig)
-
-      if (simulationRef.current) {
-        simulationRef.current.updateConfig(updatedConfig)
-      }
-    },
-    [forceConfig],
-  )
+    // Use organic positioning with current node spacing
+    const resetNodes = reorganizeNodes(nodes, links, containerRect.width, containerRect.height, nodeSpacing)
+    setNodes(resetNodes)
+    setTimeout(handleAutoFit, 100)
+  }, [nodes, links, setNodes, handleAutoFit, nodeSpacing])
 
   const handleExportPNG = useCallback(() => {
     if (containerRef.current) {
@@ -778,23 +669,9 @@ export default function NetworkGraph() {
   const renderedLinks = useMemo(() => {
     return links.map((link) => {
       const isLinkFiltered = isFiltered && !filteredLinkIds.includes(link.id)
-      return <SVGLink key={link.id} link={link} nodes={nodes} isFiltered={isLinkFiltered} />
+      return <SVGLink key={link.id} link={link} nodes={nodes} isFiltered={isLinkFiltered} zoom={zoom} />
     })
-  }, [links, nodes, isFiltered, filteredLinkIds])
-
-  // Add spacing metrics tracking
-  useEffect(() => {
-    if (layoutMode === "force" && simulationRef.current && isSimulationRunning) {
-      const interval = setInterval(() => {
-        if (simulationRef.current) {
-          setAverageDistance(simulationRef.current.getAverageDistance())
-          setIdealSpacing(simulationRef.current.getIdealSpacing())
-        }
-      }, 1000)
-
-      return () => clearInterval(interval)
-    }
-  }, [layoutMode, isSimulationRunning])
+  }, [links, nodes, isFiltered, filteredLinkIds, zoom])
 
   if (isLoading) {
     return (
@@ -864,15 +741,6 @@ export default function NetworkGraph() {
                 {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
               </Button>
               <Button
-                onClick={handleToggleLayout}
-                variant="ghost"
-                size="sm"
-                className="w-full p-2 rounded-lg hover:bg-accent transition-colors"
-                title={`Switch to ${layoutMode === "grid" ? "Force" : "Grid"} Layout`}
-              >
-                {layoutMode === "grid" ? <Zap className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
-              </Button>
-              <Button
                 onClick={handleAutoFit}
                 variant="ghost"
                 size="sm"
@@ -916,45 +784,14 @@ export default function NetworkGraph() {
               {/* Search Box */}
               <SearchBox onSearch={handleSearch} onClear={handleClearSearch} hasResults={searchResults.length > 0} />
 
-              <Card className="mt-4 border-0 shadow-sm bg-card/60 backdrop-blur-sm">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base font-semibold text-card-foreground">Layout</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Button
-                    onClick={handleToggleLayout}
-                    variant="outline"
-                    size="sm"
-                    className="w-full rounded-lg border-border hover:bg-accent transition-colors"
-                  >
-                    {layoutMode === "grid" ? (
-                      <>
-                        <Zap className="w-3 h-3 mr-2" />
-                        Switch to Force
-                      </>
-                    ) : (
-                      <>
-                        <Grid3X3 className="w-3 h-3 mr-2" />
-                        Switch to Grid
-                      </>
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {layoutMode === "force" && (
-                <div className="mt-4">
-                  <ForceControls
-                    isSimulationRunning={isSimulationRunning}
-                    onToggleSimulation={handleToggleSimulation}
-                    onRestartSimulation={handleRestartSimulation}
-                    onConfigChange={handleForceConfigChange}
-                    config={forceConfig}
-                    averageDistance={averageDistance}
-                    idealSpacing={idealSpacing}
-                  />
-                </div>
-              )}
+              {/* Node Spacing Controls */}
+              <div className="mt-4">
+                <SpacingControls
+                  nodeSpacing={nodeSpacing}
+                  onSpacingChange={handleSpacingChange}
+                  onReorganize={handleResetAndReorganize}
+                />
+              </div>
 
               <Card className="mt-4 border-0 shadow-sm bg-card/60 backdrop-blur-sm">
                 <CardHeader className="pb-3">
@@ -977,7 +814,7 @@ export default function NetworkGraph() {
                     className="w-full rounded-lg border-border hover:bg-accent transition-colors"
                   >
                     <RotateCcw className="w-3 h-3 mr-2" />
-                    {layoutMode === "grid" ? "Reorganize" : "Restart Simulation"}
+                    Reorganize Layout
                   </Button>
                   <Button
                     onClick={handleExportPNG}
@@ -1054,23 +891,71 @@ export default function NetworkGraph() {
             }}
           >
             <defs>
-              <marker id="arrowhead-link-primary" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
-                <polygon points="0 0, 12 4, 0 8" className="fill-blue-500" />
+              <marker
+                id="arrowhead-link-primary"
+                markerWidth="8"
+                markerHeight="6"
+                refX="7"
+                refY="3"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <polygon points="0 0, 8 3, 0 6" className="fill-blue-500" />
               </marker>
-              <marker id="arrowhead-link-success" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
-                <polygon points="0 0, 12 4, 0 8" className="fill-emerald-500" />
+              <marker
+                id="arrowhead-link-success"
+                markerWidth="8"
+                markerHeight="6"
+                refX="7"
+                refY="3"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <polygon points="0 0, 8 3, 0 6" className="fill-emerald-500" />
               </marker>
-              <marker id="arrowhead-link-warning" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
-                <polygon points="0 0, 12 4, 0 8" className="fill-amber-500" />
+              <marker
+                id="arrowhead-link-warning"
+                markerWidth="8"
+                markerHeight="6"
+                refX="7"
+                refY="3"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <polygon points="0 0, 8 3, 0 6" className="fill-amber-500" />
               </marker>
-              <marker id="arrowhead-link-danger" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
-                <polygon points="0 0, 12 4, 0 8" className="fill-rose-500" />
+              <marker
+                id="arrowhead-link-danger"
+                markerWidth="8"
+                markerHeight="6"
+                refX="7"
+                refY="3"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <polygon points="0 0, 8 3, 0 6" className="fill-rose-500" />
               </marker>
-              <marker id="arrowhead-link-info" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
-                <polygon points="0 0, 12 4, 0 8" className="fill-cyan-500" />
+              <marker
+                id="arrowhead-link-info"
+                markerWidth="8"
+                markerHeight="6"
+                refX="7"
+                refY="3"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <polygon points="0 0, 8 3, 0 6" className="fill-cyan-500" />
               </marker>
-              <marker id="arrowhead-default" markerWidth="12" markerHeight="8" refX="11" refY="4" orient="auto">
-                <polygon points="0 0, 12 4, 0 8" className="fill-slate-400" />
+              <marker
+                id="arrowhead-default"
+                markerWidth="8"
+                markerHeight="6"
+                refX="7"
+                refY="3"
+                orient="auto"
+                markerUnits="strokeWidth"
+              >
+                <polygon points="0 0, 8 3, 0 6" className="fill-slate-400" />
               </marker>
             </defs>
             <g transform="translate(5000, 5000)">{renderedLinks}</g>
@@ -1082,11 +967,7 @@ export default function NetworkGraph() {
         </div>
 
         <div className="absolute bottom-3 left-3 text-xs text-muted-foreground bg-background/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm">
-          <div>
-            {layoutMode === "grid"
-              ? "Drag to pan • Mouse wheel to zoom • Drag nodes to move • Click nodes for details"
-              : "Force Layout Active • Drag nodes to pin • Click nodes for details"}
-          </div>
+          <div>Drag to pan • Mouse wheel to zoom • Drag nodes to move • Click nodes for details</div>
         </div>
       </div>
 

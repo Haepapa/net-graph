@@ -1,4 +1,4 @@
-import type { NodeData } from "./types"
+import type { NodeData, LinkData } from "./types"
 
 // Helper function to calculate connection points on node edges
 export function getNodeConnectionPoint(node: NodeData, targetX: number, targetY: number) {
@@ -74,48 +74,148 @@ export function calculateAutoFit(nodes: NodeData[], containerWidth: number, cont
   return { zoom, pan }
 }
 
-// Reorganize nodes with aspect ratio awareness
-export function reorganizeNodes(nodes: NodeData[], containerWidth: number, containerHeight: number): NodeData[] {
+// Enhanced organic network-based node positioning prioritizing canvas spread
+export function reorganizeNodes(
+  nodes: NodeData[],
+  links: LinkData[],
+  containerWidth: number,
+  containerHeight: number,
+  nodeSpacing = 1500, // Updated default
+): NodeData[] {
   if (nodes.length === 0) return nodes
 
-  // Calculate optimal grid dimensions based on container aspect ratio
-  const aspectRatio = containerWidth / containerHeight
-  const nodeCount = nodes.length
+  // Create a copy of nodes with initial positions spread across canvas
+  const workingNodes = nodes.map((node, index) => {
+    // Start with more spread out initial positions
+    const angle = (index / nodes.length) * 2 * Math.PI
+    const radius = Math.min(containerWidth, containerHeight) * 0.3
+    const centerX = containerWidth / 2
+    const centerY = containerHeight / 2
 
-  let columns: number
-  let rows: number
-
-  if (aspectRatio > 1.5) {
-    // Wide landscape - prefer more columns
-    columns = Math.ceil(Math.sqrt(nodeCount * aspectRatio))
-    rows = Math.ceil(nodeCount / columns)
-  } else if (aspectRatio < 0.75) {
-    // Tall portrait - prefer more rows
-    rows = Math.ceil(Math.sqrt(nodeCount / aspectRatio))
-    columns = Math.ceil(nodeCount / rows)
-  } else {
-    // Square-ish - balanced grid
-    columns = Math.ceil(Math.sqrt(nodeCount))
-    rows = Math.ceil(nodeCount / columns)
-  }
-
-  // Calculate spacing based on container size
-  const horizontalSpacing = Math.max(200, containerWidth / (columns + 1))
-  const verticalSpacing = Math.max(150, containerHeight / (rows + 1))
-
-  // Calculate starting position to center the grid
-  const totalWidth = (columns - 1) * horizontalSpacing
-  const totalHeight = (rows - 1) * verticalSpacing
-  const startX = (containerWidth - totalWidth) / 2
-  const startY = (containerHeight - totalHeight) / 2
-
-  return nodes.map((node, index) => {
-    const row = Math.floor(index / columns)
-    const col = index % columns
     return {
       ...node,
-      x: startX + col * horizontalSpacing,
-      y: startY + row * verticalSpacing,
+      x: centerX + Math.cos(angle) * radius + (Math.random() - 0.5) * 200,
+      y: centerY + Math.sin(angle) * radius + (Math.random() - 0.5) * 200,
+      vx: 0,
+      vy: 0,
     }
   })
+
+  // Enhanced force simulation prioritizing spread across canvas
+  const iterations = 600 // More iterations for better spreading
+  const repulsionStrength = nodeSpacing * 10 // Much stronger repulsion
+  const attractionStrength = 0.1 // Weaker attraction to prevent over-clustering
+  const linkDistance = nodeSpacing * 0.4 // Shorter link distance for tight connected groups
+  const damping = 0.8 // Lower damping for more movement
+  const spreadingForce = 0.02 // New: force to spread nodes toward edges
+
+  for (let iter = 0; iter < iterations; iter++) {
+    // Reset forces
+    workingNodes.forEach((node) => {
+      node.vx = 0
+      node.vy = 0
+    })
+
+    // Apply very strong repulsion between all nodes (prioritize spreading)
+    for (let i = 0; i < workingNodes.length; i++) {
+      for (let j = i + 1; j < workingNodes.length; j++) {
+        const nodeA = workingNodes[i]
+        const nodeB = workingNodes[j]
+
+        const dx = nodeB.x - nodeA.x
+        const dy = nodeB.y - nodeA.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+
+        // Check if nodes are connected
+        const areConnected = links.some(
+          (link) =>
+            (link.leftNodeId === nodeA.id && link.rightNodeId === nodeB.id) ||
+            (link.leftNodeId === nodeB.id && link.rightNodeId === nodeA.id),
+        )
+
+        // Much stronger repulsion for unconnected nodes to prioritize spreading
+        const repulsionMultiplier = areConnected ? 1 : 4 // 4x stronger for unconnected nodes
+        const maxRepulsionRange = nodeSpacing * (areConnected ? 1.0 : 3.0) // Much larger range for unconnected
+
+        if (distance > 0 && distance < maxRepulsionRange) {
+          const force = (repulsionStrength * repulsionMultiplier) / (distance * distance + 1) // +1 to prevent division by zero
+          const fx = (dx / distance) * force
+          const fy = (dy / distance) * force
+
+          nodeA.vx -= fx
+          nodeA.vy -= fy
+          nodeB.vx += fx
+          nodeB.vy += fy
+        }
+      }
+    }
+
+    // Apply attraction ONLY for directly linked nodes
+    links.forEach((link) => {
+      const sourceNode = workingNodes.find((n) => n.id === link.leftNodeId)
+      const targetNode = workingNodes.find((n) => n.id === link.rightNodeId)
+
+      if (sourceNode && targetNode) {
+        const dx = targetNode.x - sourceNode.x
+        const dy = targetNode.y - sourceNode.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+
+        if (distance > 0) {
+          const force = (distance - linkDistance) * attractionStrength
+          const fx = (dx / distance) * force
+          const fy = (dy / distance) * force
+
+          sourceNode.vx += fx
+          sourceNode.vy += fy
+          targetNode.vx -= fx
+          targetNode.vy -= fy
+        }
+      }
+    })
+
+    // Apply spreading force to push nodes toward canvas edges
+    const centerX = containerWidth / 2
+    const centerY = containerHeight / 2
+
+    workingNodes.forEach((node) => {
+      // Calculate distance from center
+      const dx = node.x - centerX
+      const dy = node.y - centerY
+      const distanceFromCenter = Math.sqrt(dx * dx + dy * dy)
+
+      if (distanceFromCenter > 0) {
+        // Push nodes away from center (toward edges)
+        const spreadFx = (dx / distanceFromCenter) * spreadingForce * nodeSpacing
+        const spreadFy = (dy / distanceFromCenter) * spreadingForce * nodeSpacing
+
+        node.vx += spreadFx
+        node.vy += spreadFy
+      }
+    })
+
+    // Update positions with damping
+    workingNodes.forEach((node) => {
+      node.vx *= damping
+      node.vy *= damping
+
+      // Limit velocity
+      const maxVelocity = 6 // Higher max velocity for better spreading
+      const velocity = Math.sqrt(node.vx * node.vx + node.vy * node.vy)
+      if (velocity > maxVelocity) {
+        node.vx = (node.vx / velocity) * maxVelocity
+        node.vy = (node.vy / velocity) * maxVelocity
+      }
+
+      node.x += node.vx
+      node.y += node.vy
+
+      // Keep nodes within bounds with smaller margins to allow more spread
+      const margin = Math.min(nodeSpacing * 0.2, 100)
+      node.x = Math.max(margin, Math.min(containerWidth - margin, node.x))
+      node.y = Math.max(margin, Math.min(containerHeight - margin, node.y))
+    })
+  }
+
+  // Return nodes without velocity properties
+  return workingNodes.map(({ vx, vy, ...node }) => node)
 }

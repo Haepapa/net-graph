@@ -127,12 +127,12 @@
 
 /* Search Highlight and Pulse Effects */
 .node-search-highlight {
-  @apply ring-4 ring-yellow-400 ring-opacity-75;
+  @apply ring-4 ring-yellow-400/75;
   animation: searchPulse 2s infinite;
 }
 
 .dark .node-search-highlight {
-  @apply ring-yellow-500 ring-opacity-60;
+  @apply ring-yellow-500/60;
 }
 
 @keyframes searchPulse {

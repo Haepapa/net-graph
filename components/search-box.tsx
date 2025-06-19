@@ -46,7 +46,7 @@ export function SearchBox({ onSearch, onClear, hasResults }: SearchBoxProps) {
         <div className="flex gap-2">
           <Input
             type="text"
-            placeholder="Search node labels..."
+            placeholder="Search nodes..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleKeyPress}
