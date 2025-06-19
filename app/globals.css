@@ -125,6 +125,39 @@
   @apply bg-cyan-900/50 border-cyan-600 text-cyan-200;
 }
 
+/* Search Highlight and Pulse Effects */
+.node-search-highlight {
+  @apply ring-4 ring-yellow-400 ring-opacity-75;
+  animation: searchPulse 2s infinite;
+}
+
+.dark .node-search-highlight {
+  @apply ring-yellow-500 ring-opacity-60;
+}
+
+@keyframes searchPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(250, 204, 21, 0);
+  }
+}
+
+/* Filter Effects */
+.node-filtered-out {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.link-filtered-out {
+  opacity: 0.1;
+  pointer-events: none;
+}
+
 /* Beautiful Link Styles with CSS Classes */
 .link-default .link-path {
   stroke: #94a3b8;

@@ -2,16 +2,22 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { X } from "lucide-react"
+import { X, Filter } from "lucide-react"
 import type { NodeData } from "@/lib/types"
 
 interface NodeDetailsPopupProps {
   node: NodeData | null
   onClose: () => void
+  onFilter: (nodeId: string) => void
 }
 
-export function NodeDetailsPopup({ node, onClose }: NodeDetailsPopupProps) {
+export function NodeDetailsPopup({ node, onClose, onFilter }: NodeDetailsPopupProps) {
   if (!node) return null
+
+  const handleFilter = () => {
+    onFilter(node.id)
+    onClose() // Close popup after filtering
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
@@ -40,6 +46,14 @@ export function NodeDetailsPopup({ node, onClose }: NodeDetailsPopupProps) {
             <p className="text-sm text-foreground font-mono bg-muted px-2 py-1 rounded mt-1">
               {node.className || "node-default"}
             </p>
+          </div>
+
+          <div className="pt-2 border-t border-border">
+            <Button onClick={handleFilter} className="w-full" size="sm">
+              <Filter className="w-3 h-3 mr-2" />
+              Filter Connected Nodes
+            </Button>
+            <p className="text-xs text-muted-foreground mt-2 text-center">Show only this node and its connections</p>
           </div>
         </CardContent>
       </Card>
